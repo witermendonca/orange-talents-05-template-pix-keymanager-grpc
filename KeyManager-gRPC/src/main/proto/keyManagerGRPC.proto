@@ -7,14 +7,63 @@ option objc_class_prefix = "HLW";
 
 package br.com.zupacademy.witer;
 
-service KeyManagerGRPCService {
-  rpc send (KeyManagerGRPCRequest) returns (KeyManagerGRPCReply) {}
+service  KeyManagerRegistraGRPCService{
+  rpc registra(RegistraChavePixRequest) returns (RegistraChavePixResponse){}
 }
 
-message KeyManagerGRPCRequest {
-  string name = 1;
+//    Identificador do cliente deve ser obrigatório:
+//
+//    Código interno do cliente na Instituição Financeira existente no Sistema ERP do Itaú;
+//    Tipo da chave deve ser obrigatório, e pode ser:
+//
+//    CPF;
+//    telefone celular;
+//    email;
+//    chave aleatória;
+//    Valor da chave deve ser válido e único com tamanho máximo de 77 caracteres:
+//
+//    Quando tipo for CPF, deve ser obrigatório e usar formato ^[0-9]{11}$ (por exemplo: 12345678901);
+//    Quando tipo for telefone celular, deve ser obrigatório e usar formato ^\+[1-9][0-9]\d{1,14}$ (por exemplo: +5585988714077);
+//    Quando tipo for email, deve ser obrigatório e um endereço válido;
+//    Quando tipo for chave aleatória, o valor da chave não deve ser preenchido pois o mesmo deve ser gerado pelo sistema no formato UUID;
+//
+//    Tipo de conta associada a chave Pix deve ser obrigatória, e pode ser:
+//
+//    Conta Corrente;
+//    Conta Poupança;
+message RegistraChavePixRequest {
+  string clienteId = 1;
+  TipoChave tipoChave = 2;
+  string chave = 3;
+  TipoConta tipoConta = 4;
 }
 
-message KeyManagerGRPCReply {
-  string message = 1;
+//deve-se retornar um ID interno ("Pix ID") para representar a chave Pix criada pelo sistema;
+message RegistraChavePixResponse {
+  string clienteId = 1;
+  string chavePixId = 2;
+}
+
+//    Tipo da chave deve ser obrigatório, e pode ser:
+//    CPF;
+//    telefone celular;
+//    email;
+//    chave aleatória;
+//    Valor da chave deve ser válido e único com tamanho máximo de 77 caracteres:
+enum TipoChave{
+  TIPO_CHAVE_DESCONHECIDA = 0;
+  CPF = 1;
+  EMAIL = 2;
+  CELULAR = 3;
+  ALEATORIA = 4;
+}
+
+//    Tipo de conta associada a chave Pix deve ser obrigatória, e pode ser:
+//
+//    Conta Corrente;
+//    Conta Poupança;
+enum TipoConta {
+  TIPO_CONTA_DESCONHECIDA = 0;
+  CONTA_CORRENTE = 1;
+  CONTA_POUPANCA = 2;
 }

@@ -3,10 +3,22 @@ micronaut:
     name: keyManagerGRPC
 datasources:
   default:
-    url: jdbc:mysql://localhost:3306/db
+    url: ${MYSQL_URL:`jdbc:mysql://localhost:3306/db_key_manager?createDatabaseIfNotExist=true&serverTimezone=America/Sao_Paulo`}
     driverClassName: com.mysql.cj.jdbc.Driver
-    username: root
-    password: ''
+    username: ${MYSQL_USER:root}
+    password: ${MYSQL_ROOT_PASSWORD:root}
     schema-generate: CREATE_DROP
-    dialect: MYSQL
-jpa.default.properties.hibernate.hbm2ddl.auto: update
+    dialect: ${DB_DIALECT:MYSQL}
+jpa.default.properties.hibernate.hbm2ddl.auto: create-drop
+jpa.default.properties.hibernate.show_sql: true
+jpa.default.properties.hibernate.format_sql: true
+
+
+grpc:
+  server:
+    port: ${SERVER_PORT:50051}
+    keep-alive-time: 1h
+    max-inbound-message-size: 1024
+
+itau:
+  url: ${ITAU_URL:`http://localhost:9091`}
