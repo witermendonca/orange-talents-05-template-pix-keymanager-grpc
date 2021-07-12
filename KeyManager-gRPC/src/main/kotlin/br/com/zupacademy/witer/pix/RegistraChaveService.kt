@@ -29,8 +29,8 @@ class RegistraChaveService(
 
         //busca dados da conta no ERP do ITAU
         val response = itauClient.buscaContaClienteIdETipo(novaChavePix?.clienteId!!, novaChavePix?.tipoContaPix!!.name)
-        val conta = response.body()?.toModel() ?: throw IllegalStateException("Cliente não encontrado no Itau")
-            .apply { logger.error("Cliente não encontrado no Itau") }
+        val conta = response.body()?.toModel() ?: throw IllegalStateException("Conta não encontrada no Sistema Itaú")
+            .apply { logger.error("Conta não encontrada no Sistema Itaú") }
 
 
         //Persiste no banco de dados chavePix

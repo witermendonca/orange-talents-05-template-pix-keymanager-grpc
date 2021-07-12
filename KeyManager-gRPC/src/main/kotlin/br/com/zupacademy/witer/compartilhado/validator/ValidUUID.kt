@@ -16,7 +16,7 @@ import kotlin.reflect.KClass
     AnnotationTarget.PROPERTY,
     AnnotationTarget.VALUE_PARAMETER)
 annotation class ValidUUID(
-    val message: String = "não é um formato válido de UUID",
+    val message: String = "Formato UUID inválido.",
     val groups: Array<KClass<Any>> = [],
     val payload: Array<KClass<Payload>> = [],
 )

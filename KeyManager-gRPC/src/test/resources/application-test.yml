@@ -1,4 +1,8 @@
 datasources:
   default:
-    url: jdbc:tc:mysql:8:///db
-    driverClassName: org.testcontainers.jdbc.ContainerDatabaseDriver
+    url: jdbc:h2:mem:testDb;Mode=MYSQL
+    driverClassName: org.h2.Driver
+
+logger:
+  levels:
+    io.micronaut.transaction: DEBUG
