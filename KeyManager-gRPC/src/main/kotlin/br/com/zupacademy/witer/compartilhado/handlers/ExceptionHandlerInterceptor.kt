@@ -1,6 +1,7 @@
 package br.com.zupacademy.witer.compartilhado.handlers
 
 import br.com.zupacademy.witer.exceptions.ChavePixExistenteException
+import br.com.zupacademy.witer.exceptions.ChavePixNaoEncontradaException
 import io.grpc.Status
 import io.grpc.stub.StreamObserver
 import io.micronaut.aop.InterceptorBean
@@ -26,6 +27,7 @@ class ExceptionHandlerInterceptor : MethodInterceptor<Any, Any> {
                 is IllegalStateException -> Status.FAILED_PRECONDITION.withDescription(ex.message)
                 is ChavePixExistenteException -> Status.ALREADY_EXISTS.withDescription(ex.message)
                 is ConstraintViolationException -> Status.INVALID_ARGUMENT.withDescription(ex.message)
+                is ChavePixNaoEncontradaException -> Status.NOT_FOUND.withDescription(ex.message)
                 else -> Status.UNKNOWN.withDescription(ex.message)
             }
 

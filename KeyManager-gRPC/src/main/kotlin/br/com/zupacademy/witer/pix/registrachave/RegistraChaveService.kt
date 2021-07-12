@@ -1,7 +1,9 @@
-package br.com.zupacademy.witer.pix
+package br.com.zupacademy.witer.pix.registrachave
 
 import br.com.zupacademy.witer.exceptions.ChavePixExistenteException
 import br.com.zupacademy.witer.externo.ItauClient
+import br.com.zupacademy.witer.pix.ChavePix
+import br.com.zupacademy.witer.pix.ChavePixRepository
 import io.micronaut.validation.Validated
 import org.slf4j.LoggerFactory
 import javax.inject.Inject

@@ -12,7 +12,7 @@ import javax.validation.constraints.Size
 class ChavePix(
 
     @field:NotNull
-    @Column(name = "cliente_id", nullable = false)
+    @Column(name = "cliente_id",length = 16, nullable = false)
     val clienteId: UUID,
 
     @field:NotNull
@@ -39,6 +39,7 @@ class ChavePix(
 
     @Id
     @GeneratedValue
+    @Column(length = 16)
     val id: UUID? = null
 
     @Column(name = "criada_em",nullable = false)

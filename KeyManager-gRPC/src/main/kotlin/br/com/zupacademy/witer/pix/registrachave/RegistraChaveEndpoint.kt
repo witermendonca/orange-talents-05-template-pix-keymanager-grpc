@@ -1,9 +1,10 @@
-package br.com.zupacademy.witer.pix
+package br.com.zupacademy.witer.pix.registrachave
 
 import br.com.zupacademy.witer.KeyManagerRegistraGRPCServiceGrpc
 import br.com.zupacademy.witer.RegistraChavePixRequest
 import br.com.zupacademy.witer.RegistraChavePixResponse
 import br.com.zupacademy.witer.compartilhado.handlers.ErrorHandler
+import br.com.zupacademy.witer.pix.paraNovaChavePix
 import io.grpc.stub.StreamObserver
 import org.slf4j.LoggerFactory
 import javax.inject.Inject

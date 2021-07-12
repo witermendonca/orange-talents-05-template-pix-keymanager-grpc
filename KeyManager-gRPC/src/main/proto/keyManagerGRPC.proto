@@ -11,6 +11,11 @@ service  KeyManagerRegistraGRPCService{
   rpc registra(RegistraChavePixRequest) returns (RegistraChavePixResponse){}
 }
 
+service KeyManagerRemoveGRPCService{
+
+  rpc remove(RemoveChavePixRequest) returns (RemoveChavePixResponse){}
+}
+
 //    Identificador do cliente deve ser obrigatório:
 //
 //    Código interno do cliente na Instituição Financeira existente no Sistema ERP do Itaú;
@@ -66,4 +71,23 @@ enum TipoConta {
   TIPO_CONTA_DESCONHECIDA = 0;
   CONTA_CORRENTE = 1;
   CONTA_POUPANCA = 2;
+}
+
+
+//    Para excluir uma chave Pix, precisamos que o usuário informe os seguintes dados:
+//
+//    Pix ID (identificador interno da chave Pix) deve ser obrigatório;
+//
+//    Identificador do cliente deve ser obrigatório:
+//
+//    Código interno do cliente na Instituição Financeira existente no Sistema ERP do Itaú;
+//    A chave pode ser removida somente pelo seu dono (cliente).
+message RemoveChavePixRequest{
+  string clienteId = 1;
+  string chavePixId = 2;
+}
+
+message RemoveChavePixResponse{
+  string clienteId = 1;
+  string chavePixId = 2;
 }

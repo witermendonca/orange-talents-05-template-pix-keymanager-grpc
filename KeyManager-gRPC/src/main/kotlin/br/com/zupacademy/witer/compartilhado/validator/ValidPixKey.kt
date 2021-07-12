@@ -1,6 +1,6 @@
 package br.com.zupacademy.witer.compartilhado.validator
 
-import br.com.zupacademy.witer.pix.NovaChavePix
+import br.com.zupacademy.witer.pix.registrachave.NovaChavePix
 import io.micronaut.core.annotation.AnnotationValue
 import io.micronaut.validation.validator.constraints.ConstraintValidator
 import io.micronaut.validation.validator.constraints.ConstraintValidatorContext

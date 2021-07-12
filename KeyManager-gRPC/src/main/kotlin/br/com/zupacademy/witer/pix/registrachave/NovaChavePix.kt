@@ -1,7 +1,11 @@
-package br.com.zupacademy.witer.pix
+package br.com.zupacademy.witer.pix.registrachave
 
 import br.com.zupacademy.witer.compartilhado.validator.ValidPixKey
 import br.com.zupacademy.witer.compartilhado.validator.ValidUUID
+import br.com.zupacademy.witer.pix.ChavePix
+import br.com.zupacademy.witer.pix.ContaAssociada
+import br.com.zupacademy.witer.pix.TipoChave
+import br.com.zupacademy.witer.pix.TipoConta
 import io.micronaut.core.annotation.Introspected
 import java.util.*
 import javax.validation.constraints.NotBlank
