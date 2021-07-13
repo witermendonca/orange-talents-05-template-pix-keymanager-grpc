@@ -2,8 +2,11 @@ package br.com.zupacademy.witer.pix.registrachave
 
 import br.com.zupacademy.witer.exceptions.ChavePixExistenteException
 import br.com.zupacademy.witer.externo.ItauClient
+import br.com.zupacademy.witer.externo.bcb.BancoCentralClient
+import br.com.zupacademy.witer.externo.bcb.CreatePixKeyBcbRequest
 import br.com.zupacademy.witer.pix.ChavePix
 import br.com.zupacademy.witer.pix.ChavePixRepository
+import io.micronaut.http.HttpStatus
 import io.micronaut.validation.Validated
 import org.slf4j.LoggerFactory
 import javax.inject.Inject
@@ -16,6 +19,7 @@ import javax.validation.Valid
 class RegistraChaveService(
     @Inject val chavePixRepository: ChavePixRepository,
     @Inject val itauClient: ItauClient,
+    @Inject val bancoCentralClient: BancoCentralClient,
 ) {
 
     private val logger = LoggerFactory.getLogger(this.javaClass)
@@ -32,11 +36,24 @@ class RegistraChaveService(
         //busca dados da conta no ERP do ITAU
         val response = itauClient.buscaContaClienteIdETipo(novaChavePix?.clienteId!!, novaChavePix?.tipoContaPix!!.name)
         val conta = response.body()?.toModel() ?: throw IllegalStateException("Conta não encontrada no Sistema Itaú")
-            .apply { logger.error("Conta não encontrada no Sistema Itaú") }
+            .also { logger.error("Conta não encontrada no Sistema Itaú") }
 
 
         //Persiste no banco de dados chavePix
         val novaChaveCadastrada = chavePixRepository.save(novaChavePix.paraChavePix(conta))
+
+        //Tenta registra novaChavePix no Banco Central.
+        val bcbResponse = bancoCentralClient.createPixKeyBcb(CreatePixKeyBcbRequest.of(novaChaveCadastrada).also {
+            logger.info("Registrando chave Pix no Banco Central do Brasil (BCB): $it")
+        })
+
+        logger.info("Status retornado BCB ${bcbResponse.status.toString()}")
+        //Verifica StatusResponse BCB da tentativa de resgistro.
+        if (bcbResponse.status != HttpStatus.CREATED)
+            throw IllegalStateException("Erro ao registrar chave Pix no Banco Central do Brasil (BCB)")
+
+        //Atualiza chave do dominio com chave gerada pelo BCB caso tipoChave for aletoria.
+        novaChaveCadastrada.atualiza(bcbResponse.body().key)
 
         return novaChaveCadastrada
     }
