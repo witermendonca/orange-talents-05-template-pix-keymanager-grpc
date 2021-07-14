@@ -7,6 +7,7 @@ import br.com.zupacademy.witer.externo.bcb.CreatePixKeyBcbRequest
 import br.com.zupacademy.witer.pix.ChavePix
 import br.com.zupacademy.witer.pix.ChavePixRepository
 import io.micronaut.http.HttpStatus
+import io.micronaut.http.client.exceptions.HttpClientResponseException
 import io.micronaut.validation.Validated
 import org.slf4j.LoggerFactory
 import javax.inject.Inject
@@ -42,18 +43,24 @@ class RegistraChaveService(
         //Persiste no banco de dados chavePix
         val novaChaveCadastrada = chavePixRepository.save(novaChavePix.paraChavePix(conta))
 
-        //Tenta registra novaChavePix no Banco Central.
-        val bcbResponse = bancoCentralClient.createPixKeyBcb(CreatePixKeyBcbRequest.of(novaChaveCadastrada).also {
-            logger.info("Registrando chave Pix no Banco Central do Brasil (BCB): $it")
-        })
+        try {
+            //Tenta registra novaChavePix no Banco Central.
+            val bcbResponse = bancoCentralClient.createPixKeyBcb(CreatePixKeyBcbRequest.of(novaChaveCadastrada).also {
+                logger.info("Registrando chave Pix no Banco Central do Brasil (BCB): $it")
+            })
 
-        logger.info("Status retornado BCB ${bcbResponse.status.toString()}")
-        //Verifica StatusResponse BCB da tentativa de resgistro.
-        if (bcbResponse.status != HttpStatus.CREATED)
-            throw IllegalStateException("Erro ao registrar chave Pix no Banco Central do Brasil (BCB)")
+            //para validar no teste tenho que capturar o erro aqui.
+            if (bcbResponse.status != HttpStatus.CREATED)
+                throw IllegalStateException("Erro ao registrar chave Pix no Banco Central do Brasil (BCB)")
 
-        //Atualiza chave do dominio com chave gerada pelo BCB caso tipoChave for aletoria.
-        novaChaveCadastrada.atualiza(bcbResponse.body().key)
+            //Atualiza chave do dominio com chave gerada pelo BCB caso tipoChave for aletoria.
+            novaChaveCadastrada.atualiza(bcbResponse.body()!!.key)
+
+        } catch (e: HttpClientResponseException) {
+            if (e.status == HttpStatus.UNPROCESSABLE_ENTITY) { //status code 422
+                throw IllegalStateException("Erro ao registrar chave Pix no Banco Central do Brasil (BCB)")
+            }
+        }
 
         return novaChaveCadastrada
     }

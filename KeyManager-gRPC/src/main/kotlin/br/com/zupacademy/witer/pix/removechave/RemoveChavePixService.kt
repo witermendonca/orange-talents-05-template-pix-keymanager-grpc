@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
+import javax.transaction.Transactional
 import javax.validation.constraints.NotBlank
 
 @Singleton
@@ -22,6 +23,7 @@ class RemoveChavePixService(
 
     private val logger = LoggerFactory.getLogger(this.javaClass)
 
+    @Transactional
     fun remove(
         @NotBlank @ValidUUID clienteId: String?,
         @NotBlank @ValidUUID chavePixId: String?,
@@ -42,7 +44,9 @@ class RemoveChavePixService(
             bancoCentralClient.deletePixKeyBcb(key = chavePix.chave, request = DeletePixKeyBcbRequest(chavePix.chave))
 
         //Verifica StatusResponse BCB da tentativa de deletar chavePix.
-        if (bcbResponse.status != HttpStatus.OK)
+        if (bcbResponse.status != HttpStatus.OK) {
+            logger.error("Erro ao remover chave Pix no Banco Central do Brasil (BCB)")
             throw IllegalStateException("Erro ao remover chave Pix no Banco Central do Brasil (BCB)")
+        }
     }
 }

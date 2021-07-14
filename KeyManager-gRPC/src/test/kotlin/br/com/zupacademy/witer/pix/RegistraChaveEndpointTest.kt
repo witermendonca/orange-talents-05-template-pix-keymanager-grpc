@@ -8,6 +8,7 @@ import br.com.zupacademy.witer.externo.DadosDaContaResponse
 import br.com.zupacademy.witer.externo.InstituicaoResponse
 import br.com.zupacademy.witer.externo.ItauClient
 import br.com.zupacademy.witer.externo.TitularResponse
+import br.com.zupacademy.witer.externo.bcb.*
 import io.grpc.ManagedChannel
 import io.grpc.Status
 import io.grpc.StatusRuntimeException
@@ -16,6 +17,7 @@ import io.micronaut.context.annotation.Factory
 import io.micronaut.grpc.annotation.GrpcChannel
 import io.micronaut.grpc.server.GrpcServerChannel
 import io.micronaut.http.HttpResponse
+import io.micronaut.http.HttpStatus
 import io.micronaut.test.annotation.MockBean
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -25,6 +27,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.mock
+import java.time.LocalDateTime
 import java.util.*
 import javax.inject.Inject
 
@@ -36,6 +39,10 @@ internal class RegistraChaveEndpointTest(
 
     @Inject
     lateinit var itauClient: ItauClient;
+
+    @Inject
+    lateinit var bcbClient: BancoCentralClient
+
 
     //Gera UUID para Cliente
     companion object {
@@ -56,6 +63,11 @@ internal class RegistraChaveEndpointTest(
         `when`(itauClient.buscaContaClienteIdETipo(clienteId = CLIENTE_ID.toString(),
             tipo = TipoConta.CONTA_CORRENTE.toString())).thenReturn(HttpResponse.ok(dadosDaContaResponse()))
 
+        //cenario (enviar dados chavePix para cadastro no BCB e retorno for created.)
+        `when`(bcbClient.createPixKeyBcb(createPixKeyBcbRequest()))
+            .thenReturn(HttpResponse.created(createPixKeyBcbResponse()))
+
+
         //ação (passar os dados para cadastro de nova chave pix pelo gRPClient.)
         val response = grpcClient.registra(RegistraChavePixRequest.newBuilder()
             .setClienteId(CLIENTE_ID.toString())
@@ -73,7 +85,7 @@ internal class RegistraChaveEndpointTest(
     }
 
     @Test
-    fun `nao deve cadastrar chave pix quando já estiver cadastrada no sitema`() {
+    fun `nao deve cadastrar chave pix quando ja estiver cadastrada no sitema`() {
 
         //cenario (chave pix já ser cadastrada no sitema.)
         repository.save(chavePix())
@@ -129,11 +141,39 @@ internal class RegistraChaveEndpointTest(
             grpcClient.registra(RegistraChavePixRequest.newBuilder().build())
         }
 
-        //validação(Validar o Status code e description do erro.)
+        //validação(Validar o Status code do erro.)
         with(thrown) {
             assertEquals(Status.INVALID_ARGUMENT.code, status.code)
         }
 
+    }
+
+    @Test
+    fun `nao deve cadastrar chave pix quando retorno bcb for diferente que httpStatus created`() {
+
+        //cenario (fazer a busca da conta no sitema externo itau e ela devolver uma canta válida.)
+        `when`(itauClient.buscaContaClienteIdETipo(clienteId = CLIENTE_ID.toString(),
+            tipo = TipoConta.CONTA_CORRENTE.toString())).thenReturn(HttpResponse.ok(dadosDaContaResponse()))
+
+        //cenario (enviar dados chavePix para cadastro BCB e retorno for badRequest. Erro esperado .)
+        `when`(bcbClient.createPixKeyBcb(createPixKeyBcbRequest()))
+            .thenReturn(HttpResponse.status(HttpStatus.UNPROCESSABLE_ENTITY))
+
+        //ação(passar os dados para cadastro de nova chave pix pelo gRPClient. Erro esperado.)
+        val thrown = assertThrows<StatusRuntimeException> {
+            grpcClient.registra(RegistraChavePixRequest.newBuilder()
+                .setClienteId(CLIENTE_ID.toString())
+                .setTipoChave(TipoChave.EMAIL)
+                .setChave("y.matheus@zup.com.br")
+                .setTipoConta(TipoConta.CONTA_CORRENTE)
+                .build())
+        }
+
+        //validação(Validar o Status code e description do erro.)
+        with(thrown) {
+            assertEquals(Status.FAILED_PRECONDITION.code, status.code)
+            assertEquals("Erro ao registrar chave Pix no Banco Central do Brasil (BCB)", status.description)
+        }
     }
 
     private fun chavePix() = ChavePix(
@@ -158,6 +198,34 @@ internal class RegistraChaveEndpointTest(
         titular = TitularResponse("Yuri Matheus", "86135457004")
     )
 
+    private fun createPixKeyBcbRequest() = CreatePixKeyBcbRequest(
+        keyType = PixKeyType.EMAIL,
+        key = "y.matheus@zup.com.br",
+        bankAccount = bankAccount(),
+        owner = owner()
+    )
+
+    private fun createPixKeyBcbResponse() = CreatePixKeyBcbResponse(
+        keyType = PixKeyType.EMAIL,
+        key = "y.matheus@zup.com.br",
+        bankAccount = bankAccount(),
+        owner = owner(),
+        createdAt = LocalDateTime.now()
+    )
+
+    private fun owner() = Owner(
+        type = Owner.OwnerType.NATURAL_PERSON,
+        name = "Yuri Matheus",
+        taxIdNumber = "86135457004"
+    )
+
+    private fun bankAccount() = BankAccount(
+        participant = ContaAssociada.ITAU_UNIBANCO_ISPB,
+        branch = "0001",
+        accountNumber = "123455",
+        accountType = BankAccount.AccountType.CACC,
+    )
+
     //serviço gRPC
     @Factory
     class Clients {
@@ -171,6 +239,12 @@ internal class RegistraChaveEndpointTest(
     @MockBean(ItauClient::class)
     fun itauClient(): ItauClient? {
         return mock(ItauClient::class.java)
+    }
+
+    //mock servidor bcb
+    @MockBean(BancoCentralClient::class)
+    fun bcbClient(): BancoCentralClient {
+        return mock(BancoCentralClient::class.java)
     }
 }
 

@@ -52,7 +52,6 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.7.1")
     testImplementation("com.h2database:h2")
 
-    testImplementation("org.mockito:mockito-core")
     testImplementation("org.mockito:mockito-junit-jupiter:3.8.0")
 
     testImplementation("org.hamcrest:hamcrest")
