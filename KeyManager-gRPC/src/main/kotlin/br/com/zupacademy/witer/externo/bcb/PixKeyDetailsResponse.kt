@@ -1,5 +1,9 @@
 package br.com.zupacademy.witer.externo.bcb
 
+import br.com.zupacademy.witer.pix.ContaAssociada
+import br.com.zupacademy.witer.pix.TipoConta
+import br.com.zupacademy.witer.pix.carregachave.ChavePixInfo
+import br.com.zupacademy.witer.pix.carregachave.Instituicoes
 import java.time.LocalDateTime
 
 data class PixKeyDetailsResponse(
@@ -9,6 +13,23 @@ data class PixKeyDetailsResponse(
     val owner: Owner,
     val createdAt: LocalDateTime,
 ) {
+    fun toModel(): ChavePixInfo {
+        return ChavePixInfo(
+            tipochave = keyType.domainType!!,
+            chave = this.key,
+            tipoConta = when (this.bankAccount.accountType) {
+                BankAccount.AccountType.CACC -> TipoConta.CONTA_CORRENTE
+                BankAccount.AccountType.SVGS -> TipoConta.CONTA_POUPANCA
+            },
+            conta = ContaAssociada(
+                instituicao = Instituicoes.nome(bankAccount.participant),
+                nomeDoTitular = owner.name,
+                cpfDoTitular = owner.taxIdNumber,
+                agencia = bankAccount.branch,
+                numeroDaConta = bankAccount.accountNumber
+            )
+        )
+    }
 }
 
 //PixKeyDetailsResponse{

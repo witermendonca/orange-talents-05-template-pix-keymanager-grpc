@@ -6,6 +6,7 @@ option java_outer_classname = "KeyManagerGRPC";
 option objc_class_prefix = "HLW";
 
 package br.com.zupacademy.witer;
+import "google/protobuf/timestamp.proto";
 
 service  KeyManagerRegistraGRPCService{
   rpc registra(RegistraChavePixRequest) returns (RegistraChavePixResponse){}
@@ -14,6 +15,10 @@ service  KeyManagerRegistraGRPCService{
 service KeyManagerRemoveGRPCService{
 
   rpc remove(RemoveChavePixRequest) returns (RemoveChavePixResponse){}
+}
+
+service KeyManagerCarregaGRPCService{
+  rpc carrega(CarregaChavePixRequest) returns (CarregaChavePixResponse){}
 }
 
 //    Identificador do cliente deve ser obrigatório:
@@ -90,4 +95,65 @@ message RemoveChavePixRequest{
 message RemoveChavePixResponse{
   string clienteId = 1;
   string chavePixId = 2;
+}
+
+
+//    Poderemos consultar uma chave Pix de duas maneiras diferentes. Portanto, devemos suportar as seguintes abordagens:
+//
+//    1-Para o nosso sistema KeyManager:
+//    Identificador do cliente e Pix ID devem ser obrigatórios;
+//    a chave Pix encontrada deve ser de propriedade do cliente;
+//    Caso a chave Pix não esteja devidamente registrada no BCB, a mesma não poderá ter suas informações disponibilizadas abertamente, afinal trata-se de uma chave ainda inválida.
+//
+//    2-Para outros microsserviços e sistemas:
+//    Chave Pix deve ser obrigatória e possuir tamanho máximo de 77 caracteres;
+//    No caso de nosso sistema não possuir a chave Pix informada, a mesma deve ser consultada no sistema Pix do BCB.
+//    A ideia é que nosso sistema KeyManager consiga consultar chaves por Pix ID para seus usuários enquanto outros sistemas e serviços possam consultar os dados de qualquer chave pela própria chave Pix para validação de dados ou mesmo para exibir informações.
+message CarregaChavePixRequest{
+  message FiltroPorPixEClienteId{
+    string clienteId = 1;
+    string pixId = 2;
+  }
+
+  oneof filtro{
+    FiltroPorPixEClienteId pixEClienteId = 1;
+    string chave = 2;
+  }
+}
+
+//    Resultado Esperado
+//    Em caso de sucesso, deve-se retornar os dados da chave Pix:
+//
+//    Pix ID (opcional - necessário somente para abordagem 1);
+//    Identificador do cliente (opcional - necessário somente para abordagem 1);
+//    Tipo da chave;
+//    Valor da chave;
+//    Nome e CPF do titular da conta;
+//    Dados da conta vinculada a chave Pix:
+//    nome da instituição financeira;
+//    agência, número da conta e tipo da conta (Corrente ou Poupança);
+//    Data/hora de registro ou criação da chave;
+
+message CarregaChavePixResponse{
+
+  string clienteId = 1;
+  string pixId = 2;
+  ChavePix chavePix = 3;
+
+  message ChavePix{
+
+    message ContaInfo {
+      TipoConta tipo = 1;
+      string instituicao = 2;
+      string nomeDoTitular = 3;
+      string cpfDoTitular = 4;
+      string agencia = 5;
+      string numeroDaConta = 6;
+    }
+
+    TipoChave tipo = 1;
+    string chave = 2;
+    ContaInfo conta = 3;
+    google.protobuf.Timestamp criadaEm = 4;
+  }
 }
