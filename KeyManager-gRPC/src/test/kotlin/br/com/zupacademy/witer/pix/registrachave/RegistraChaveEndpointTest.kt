@@ -1,4 +1,4 @@
-package br.com.zupacademy.witer.pix
+package br.com.zupacademy.witer.pix.registrachave
 
 import br.com.zupacademy.witer.KeyManagerRegistraGRPCServiceGrpc
 import br.com.zupacademy.witer.RegistraChavePixRequest
@@ -9,6 +9,9 @@ import br.com.zupacademy.witer.externo.InstituicaoResponse
 import br.com.zupacademy.witer.externo.ItauClient
 import br.com.zupacademy.witer.externo.TitularResponse
 import br.com.zupacademy.witer.externo.bcb.*
+import br.com.zupacademy.witer.pix.ChavePix
+import br.com.zupacademy.witer.pix.ChavePixRepository
+import br.com.zupacademy.witer.pix.ContaAssociada
 import io.grpc.ManagedChannel
 import io.grpc.Status
 import io.grpc.StatusRuntimeException
@@ -17,8 +20,6 @@ import io.micronaut.context.annotation.Factory
 import io.micronaut.grpc.annotation.GrpcChannel
 import io.micronaut.grpc.server.GrpcServerChannel
 import io.micronaut.http.HttpResponse
-import io.micronaut.http.HttpStatus
-import io.micronaut.http.client.exceptions.HttpClientResponseException
 import io.micronaut.test.annotation.MockBean
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import org.junit.jupiter.api.Assertions.assertEquals
