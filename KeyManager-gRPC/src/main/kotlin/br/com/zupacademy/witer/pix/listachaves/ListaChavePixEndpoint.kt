@@ -27,12 +27,6 @@ class ListaChavePixEndpoint(
             throw IllegalArgumentException("Cliente Id não pode ser nulo ou vazio.")
         }
 
-        if (!chavePixRepository.existsByClienteId(UUID.fromString(request.clienteId))) {
-            logger.error("Cliente Id não encontrado no sistema.")
-            throw ClienteIdNaoEncontradoException("Cliente Id não encontrado no sistema.")
-        }
-
-
         val listaDeChavesPix = chavePixRepository.findAllByClienteId(UUID.fromString(request.clienteId)).map {
             ListaChavePixResponse.ChavePix.newBuilder()
                 .setChavePixId(it.id.toString())
