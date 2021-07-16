@@ -13,7 +13,6 @@ service  KeyManagerRegistraGRPCService{
 }
 
 service KeyManagerRemoveGRPCService{
-
   rpc remove(RemoveChavePixRequest) returns (RemoveChavePixResponse){}
 }
 
@@ -21,6 +20,9 @@ service KeyManagerCarregaGRPCService{
   rpc carrega(CarregaChavePixRequest) returns (CarregaChavePixResponse){}
 }
 
+service KeyManagerListaGRPCService{
+  rpc lista(ListaChavePixRequest) returns (ListaChavePixResponse){}
+}
 //    Identificador do cliente deve ser obrigatório:
 //
 //    Código interno do cliente na Instituição Financeira existente no Sistema ERP do Itaú;
@@ -155,5 +157,38 @@ message CarregaChavePixResponse{
     string chave = 2;
     ContaInfo conta = 3;
     google.protobuf.Timestamp criadaEm = 4;
+  }
+}
+
+//    Para listar todas as chaves Pix cadastradas, precisamos que o usuário informe os seguintes dados:
+//
+//    Identificador do cliente deve ser obrigatório:
+//    Código interno do cliente na Instituição Financeira existente no Sistema ERP do Itaú;
+message ListaChavePixRequest{
+  string clienteId = 1;
+}
+
+//    Resultado Esperado
+//    Em caso de sucesso, deve-se todas as chaves Pix com os seguintes dados:
+//
+//    Pix ID;
+//    Identificador do cliente;
+//    Tipo da chave;
+//    Valor da chave;
+//    tipo da conta (Corrente ou Poupança);
+//    Data/hora de registro ou criação da chave;
+//    Se nenhuma chave for encontrada deve-se retornar uma coleção vazia;
+//
+//    Em caso de erro, deve-se retornar o erro específico e amigável para o usuário final;
+message ListaChavePixResponse{
+  string clienteId = 1;
+  repeated ChavePix chavesPix = 2;
+
+  message ChavePix {
+    string chavePixId = 1;
+    TipoChave tipoChave = 2;
+    string chave = 3;
+    TipoConta tipoConta = 4;
+    google.protobuf.Timestamp criadaEm = 5;
   }
 }
