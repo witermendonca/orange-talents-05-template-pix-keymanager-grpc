@@ -49,10 +49,6 @@ class RegistraChaveService(
                 logger.info("Registrando chave Pix no Banco Central do Brasil (BCB): $it")
             })
 
-            //para validar no teste tenho que capturar o erro aqui.
-            if (bcbResponse.status != HttpStatus.CREATED)
-                throw IllegalStateException("Erro ao registrar chave Pix no Banco Central do Brasil (BCB)")
-
             //Atualiza chave do dominio com chave gerada pelo BCB caso tipoChave for aletoria.
             novaChaveCadastrada.atualiza(bcbResponse.body()!!.key)
 

@@ -20,6 +20,8 @@ import io.micronaut.context.annotation.Factory
 import io.micronaut.grpc.annotation.GrpcChannel
 import io.micronaut.grpc.server.GrpcServerChannel
 import io.micronaut.http.HttpResponse
+import io.micronaut.http.HttpStatus
+import io.micronaut.http.client.exceptions.HttpClientResponseException
 import io.micronaut.test.annotation.MockBean
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -159,7 +161,7 @@ internal class RegistraChaveEndpointTest(
 
         //cenario (enviar dados chavePix para cadastro BCB e retorno for badRequest. Erro esperado .)
         `when`(bcbClient.createPixKeyBcb(createPixKeyBcbRequest()))
-            .thenReturn(HttpResponse.unprocessableEntity())
+            .thenThrow(HttpClientResponseException("mensagme de erro", HttpResponse.unprocessableEntity<HttpStatus>()))
 
         //ação(passar os dados para cadastro de nova chave pix pelo gRPClient. Erro esperado.)
         val thrown = assertThrows<StatusRuntimeException> {
