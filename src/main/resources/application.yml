@@ -9,7 +9,7 @@ datasources:
     password: ${MYSQL_ROOT_PASSWORD:root}
     schema-generate: CREATE_DROP
     dialect: ${DB_DIALECT:MYSQL}
-jpa.default.properties.hibernate.hbm2ddl.auto: create-drop
+jpa.default.properties.hibernate.hbm2ddl.auto: update
 jpa.default.properties.hibernate.show_sql: true
 jpa.default.properties.hibernate.format_sql: true
 

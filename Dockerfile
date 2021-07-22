@@ -1,4 +1,4 @@
-FROM openjdk:16-alpine
+FROM openjdk:16
 EXPOSE 50051
 ARG JAR_FILE=build/libs/*-all.jar
 

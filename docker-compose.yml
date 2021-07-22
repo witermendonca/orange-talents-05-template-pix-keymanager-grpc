@@ -1,0 +1,34 @@
+version: '3'
+services:
+    bcb:
+        image: "public.ecr.aws/d8b2x5c9/orange-stack-sat-bcb-pix"
+        ports: 
+            - 8082:8082
+    itau:
+        image: "public.ecr.aws/d8b2x5c9/orange-stack-sat-itau-erp"
+        ports: 
+            - 9091:9091
+    mysql:
+        image: mysql
+        container_name: mysql-key-manager-grpc
+        ports:
+                - 3366:3306
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: db_keymanager
+
+    api-key-manager-grpc:
+        build:
+            dockerfile: ./Dockerfile
+            context: .
+        container_name: api-key-manager-grpc
+        ports:
+            - 50051:50051
+        depends_on:
+            - mysql
+            - bcb
+            - itau
+        environment:
+            ITAU_URL: "http://itau:9091"
+            BCB_URL: "http://bcb:8082"
+            MYSQL_URL: jdbc:mysql://mysql/db_keymanager
