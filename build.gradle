@@ -35,7 +35,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlinVersion}")
     runtimeOnly("ch.qos.logback:logback-classic")
-    runtimeOnly("mysql:mysql-connector-java")
+    runtimeOnly("org.postgresql:postgresql")
     implementation("io.micronaut:micronaut-validation")
     implementation("io.micronaut:micronaut-http-client")
     implementation("org.hibernate:hibernate-validator:6.1.6.Final")

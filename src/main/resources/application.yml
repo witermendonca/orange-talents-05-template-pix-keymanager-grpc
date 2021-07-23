@@ -1,14 +1,23 @@
 micronaut:
   application:
     name: keyManagerGRPC
+#datasources:
+#  default:
+#    url: ${MYSQL_URL:`jdbc:mysql://localhost:3306/db_key_manager?createDatabaseIfNotExist=true&serverTimezone=America/Sao_Paulo`}
+#    driverClassName: com.mysql.cj.jdbc.Driver
+#    username: ${MYSQL_USER:root}
+#    password: ${MYSQL_ROOT_PASSWORD:root}
+#    schema-generate: CREATE_DROP
+#    dialect: ${DB_DIALECT:MYSQL}
+#
 datasources:
   default:
-    url: ${MYSQL_URL:`jdbc:mysql://localhost:3306/db_key_manager?createDatabaseIfNotExist=true&serverTimezone=America/Sao_Paulo`}
-    driverClassName: com.mysql.cj.jdbc.Driver
-    username: ${MYSQL_USER:root}
-    password: ${MYSQL_ROOT_PASSWORD:root}
+    url: ${JDBC_URL:`jdbc:postgresql://localhost:5432/db_keymanager`}
+    driverClassName: ${DRIVER:org.postgresql.Driver}
+    username: ${POSTGRES_USER:keymanager}
+    password: ${POSTGRES_PASSWORD:keymanager}
     schema-generate: CREATE_DROP
-    dialect: ${DB_DIALECT:MYSQL}
+    dialect: ${DIALECT:POSTGRES}
 jpa.default.properties.hibernate.hbm2ddl.auto: update
 jpa.default.properties.hibernate.show_sql: true
 jpa.default.properties.hibernate.format_sql: true

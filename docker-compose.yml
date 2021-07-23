@@ -8,14 +8,15 @@ services:
         image: "public.ecr.aws/d8b2x5c9/orange-stack-sat-itau-erp"
         ports: 
             - 9091:9091
-    mysql:
-        image: mysql
-        container_name: mysql-key-manager-grpc
+    postgres:
+        image: 'postgres:alpine'
         ports:
-                - 3366:3306
+            - 5432:5432
         environment:
-            MYSQL_ROOT_PASSWORD: root
-            MYSQL_DATABASE: db_keymanager
+            POSTGRES_USER: keymanager
+            POSTGRES_PASSWORD: keymanager
+            POSTGRES_DB: db_keymanager
+            POSTGRES_HOST: postgres
 
     api-key-manager-grpc:
         build:
@@ -25,10 +26,10 @@ services:
         ports:
             - 50051:50051
         depends_on:
-            - mysql
+            - postgres
             - bcb
             - itau
         environment:
             ITAU_URL: "http://itau:9091"
             BCB_URL: "http://bcb:8082"
-            MYSQL_URL: jdbc:mysql://mysql/db_keymanager
+            JDBC_URL: jdbc:postgresql://postgres/db_keymanager
