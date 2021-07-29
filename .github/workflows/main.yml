@@ -13,3 +13,5 @@ jobs:
           REMOTE: 'https://git-codecommit.us-east-1.amazonaws.com/v1/repos/witermendonca-orange-talents-05-template-pix-keymanager-grpc'
           GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
           GIT_PASSWORD: ${{ secrets.GIT_PASSWORD }}
+
+#          testando
