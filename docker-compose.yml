@@ -19,10 +19,7 @@ services:
             POSTGRES_HOST: postgres
 
     api-key-manager-grpc:
-        build:
-            dockerfile: ./Dockerfile
-            context: .
-        container_name: api-key-manager-grpc
+        image: witermendonca/keymanager-grpc
         ports:
             - 50051:50051
         depends_on:
@@ -33,4 +30,11 @@ services:
             ITAU_URL: "http://itau:9091"
             BCB_URL: "http://bcb:8082"
             DB_URI: jdbc:postgresql://postgres/postgres
+    api-key-manager-rest:
+        image: witermendonca/keymanager-rest
+        ports:
+            - 8080:8080
+        environment:
+            KEY_MANAGER_HOST: api-key-manager-grpc
+
      
