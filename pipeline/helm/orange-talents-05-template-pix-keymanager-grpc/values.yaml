@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: public.ecr.aws/d8b2x5c9/orange-talents-05-template-pix-keymanager-grpc
+  repository: public.ecr.aws/i2c7a5l2/wxm-orange-talents-05-template-pix-keymanager-grpc
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: latest
@@ -81,10 +81,10 @@ tolerations: []
 
 affinity: {}
 
-#application:
-#  DB_URI: jdbc:postgresql://keymanager.csx61fbpcnsf.us-east-2.rds.amazonaws.com:5432/keymanager_grpc_db
-#  DB_USER: keymanager_grpc_user
-#  DB_PASSWORD: byg1sEH05O
-#  DB_DIALECT: POSTGRES
-#  ITAU_URL: http://internal-a0056f1bc61dd472ab8af70597036b6c-721953980.sa-east-1.elb.amazonaws.com
-#  BCB_URL: http://internal-abfe0883c77dd427ab0997441a62306b-1365683537.sa-east-1.elb.amazonaws.com
+application:
+  DB_URI: jdbc:postgresql://database-wxm-kmg.chpeyn5uxxax.us-east-1.rds.amazonaws.com:5432/keymanager_grpc_db
+  DB_USER: postgre
+  DB_PASSWORD: bfZm3o2ImYCvt
+  DB_DIALECT: POSTGRES
+  ITAU_URL: http://internal-a0056f1bc61dd472ab8af70597036b6c-721953980.sa-east-1.elb.amazonaws.com
+  BCB_URL: http://internal-abfe0883c77dd427ab0997441a62306b-1365683537.sa-east-1.elb.amazonaws.com
